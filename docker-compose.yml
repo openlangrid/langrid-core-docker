@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  tomcat:
+    image: tomcat:9.0.16-jre8
+    volumes:
+      - ./volumes/tomcat/webapps/service_manager.war:/usr/local/tomcat/webapps/service_manager.war
+      - ./volumes/tomcat/conf/Catalina/localhost/service_manager.xml:/usr/local/tomcat/conf/Catalina/localhost/service_manager.xml
+      - ./volumes/tomcat/lib/postgresql-9.4.1212.jar:/usr/local/tomcat/lib/postgresql.jar
+      - ./volumes/tomcat/logs:/usr/local/tomcat/logs
+    ports:
+      - "8080:8080"
+      - "8009:8009"
+    environment:
+      TZ: Asia/Tokyo
+    links:
+      - postgresql
+
+  postgresql:
+    image: postgres:9.6
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      TZ: Asia/Tokyo
+    volumes:
+      - ./volumes/postgresql/initdb:/docker-entrypoint-initdb.d
